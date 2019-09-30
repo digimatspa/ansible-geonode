@@ -163,14 +163,15 @@
 
 - name: copy geonode-project settings patch
   become: yes
-  copy:
-    src: settings.patch
+  template:
+    src: settings.patch.j2
     dest: "{{app_code_dir}}/{{app_name}}/{{app_name}}/settings.patch"
   when: github_user == "GeoNode"
 
 - name: patch geonode-project settings file
   become: yes
   shell: cd "{{app_code_dir}}/{{app_name}}/{{app_name}}" && patch < settings.patch
+  ignore_errors: yes
   when: github_user == "GeoNode"
 
 - name: Django makemigrations
