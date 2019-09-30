@@ -5,6 +5,6 @@
  # Load more settings from a file called local_settings.py if it exists
  try:
 +    from geonode.settings import *
-     from my_geonode.local_settings import *
+     from {{app_name}}.local_settings import *
  #    from geonode.local_settings import *
  except ImportError:
