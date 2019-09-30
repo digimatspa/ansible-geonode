@@ -115,22 +115,17 @@
 
 - name: patch the geonode-oauth file (geoserver part)
   become: yes
-  shell: sed -i -e "s|http://localhost:8080|http://{{ server_name }}|g" /var/lib/tomcat8/webapps/geoserver/data/security/filter/geonode-oauth2/config.xml
-  when: geonode_oauth_file.stat.exists
-
-- name: patch the geonode-oauth file (geonode part)
-  become: yes
-  shell: sed -i -e "s|http://localhost:8000|http://{{ server_name }}|g" /var/lib/tomcat8/webapps/geoserver/data/security/filter/geonode-oauth2/config.xml
+  shell: sed -i -e "s|<accessTokenUri>.*</accessTokenUri>|<accessTokenUri>http://{{ server_name }}/o/token/</accessTokenUri>|g" -e "s|<userAuthorizationUri>.*</userAuthorizationUri>|<userAuthorizationUri>http://{{ server_name }}/o/authorize/</userAuthorizationUri>|g" -e "s|<redirectUri>.*</redirectUri>|<redirectUri>http://{{ server_name }}/geoserver/index.html</redirectUri>|g" -e "s|<checkTokenEndpointUrl>.*</checkTokenEndpointUrl>|<checkTokenEndpointUrl>http://{{ server_name }}/api/o/v4/tokeninfo/</checkTokenEndpointUrl>|g" -e "s|<logoutUri>.*</logoutUri>|<logoutUri>http://{{ server_name }}/account/logout/</logoutUri>|g" /var/lib/tomcat8/webapps/geoserver/data/security/filter/geonode-oauth2/config.xml
   when: geonode_oauth_file.stat.exists
 
 - name: patch the geonode-role file
   become: yes
-  shell: sed -i -e "s|http://localhost:8000|http://{{ server_name }}|g" /var/lib/tomcat8/webapps/geoserver/data/security/role/geonode\ REST\ role\ service/config.xml
+  shell: sed -i -e "s|<baseUrl>.*</baseUrl>|<baseUrl>http://{{ server_name }}</baseUrl>|g" /var/lib/tomcat8/webapps/geoserver/data/security/role/geonode\ REST\ role\ service/config.xml
   when: geonode_oauth_file.stat.exists
 
 - name: patch the geoserver global config file
   become: yes
-  shell: sed -i -e "s|http://localhost:8080|http://{{ server_name }}|g" /var/lib/tomcat8/webapps/geoserver/data/global.xml
+  shell: sed -i -e "s|<proxyBaseUrl>.*</proxyBaseUrl>|<proxyBaseUrl>http://{{ server_name }}/geoserver</proxyBaseUrl>|g" /var/lib/tomcat8/webapps/geoserver/data/global.xml
   when: geonode_oauth_file.stat.exists
 
 # - name: remove masterpw.info file to remove security risk warning
